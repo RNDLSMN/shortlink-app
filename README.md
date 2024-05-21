@@ -42,7 +42,7 @@ Beberapa peningkatan telah dilakukan pada file `server.js` untuk meningkatkan ke
 ### Instalasi
 1. **Clone repository**:
     ```
-    git clone shortlink-app
+    git clone [shortlink-app](https://github.com/RNDLSMN/shortlink-app.git)
     ```
 
 2. **Masuk ke direktori proyek**:
