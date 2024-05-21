@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CMS Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        table, th, td { border: 1px solid black; }
+        th, td { padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CMS Dashboard</h1>
+        <form id="link-form">
+            <input type="url" id="originalUrl" name="originalUrl" placeholder="Enter URL" required>
+            <button type="submit">Add Link</button>
+        </form>
+        <table id="links-table">
+            <thead>
+                <tr>
+                    <th>Original URL</th>
+                    <th>Short URL</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchLinks();
+
+            document.getElementById('link-form').addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const originalUrl = document.getElementById('originalUrl').value;
+                const response = await fetch('/links', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ originalUrl })
+                });
+                if (response.ok) {
+                    fetchLinks();
+                } else {
+                    alert('Failed to add link');
+                }
+            });
+        });
+
+        async function fetchLinks() {
+            const response = await fetch('/links');
+            const links = await response.json();
+            const tbody = document.querySelector('#links-table tbody');
+            tbody.innerHTML = '';
+            links.forEach(link => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = \`
+                    <td>\${link.originalUrl}</td>
+                    <td>\${link.shortUrl}</td>
+                    <td>
+                        <button onclick="deleteLink('\${link._id}')">Delete</button>
+                    </td>
+                \`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function deleteLink(id) {
+            const response = await fetch('/links/' + id, { method: 'DELETE' });
+            if (response.ok) {
+                fetchLinks();
+            } else {
+                alert('Failed to delete link');
+            }
+        }
+    </script>
+</body>
+</html>
